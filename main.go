@@ -75,9 +75,9 @@ func aggregateHandler(w http.ResponseWriter, r *http.Request) {
     return
   }
 
-  include, ok := parseQueryParam(r.URL.Query(), "include")
+  include := parseQueryParam(r.URL.Query(), "include")
 
-  if !ok || len(include) == 0 {
+  if len(include) == 0 {
     include = []string{
       "requests_per_minute",
       "requests_per_country",
