@@ -47,9 +47,17 @@ type Entry struct {
 
 var serverPort string
 
+var version string
+
 func main() {
   flag.StringVar(&serverPort, "port", "8080", "Port to run the web server on")
+  versionFlag := flag.Bool("version", false, "Print the version and exit")
   flag.Parse()
+
+  if *versionFlag {
+		fmt.Printf("Version: %s\n", version)
+		os.Exit(0)
+	}
 
   http.HandleFunc("/", aggregateHandler)
   fmt.Printf("Starting server on :%s\n", serverPort)
