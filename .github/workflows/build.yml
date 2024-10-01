@@ -34,8 +34,7 @@ jobs:
             ${{ runner.os }}-go-
 
       - name: Get version from tag
-        id: vars
-        run: echo "::set-output name=VERSION::${GITHUB_REF#refs/tags/}"
+        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
 
       - name: Install dependencies
         run: go mod tidy
@@ -43,7 +42,7 @@ jobs:
       - name: Build for ${{ matrix.goarch }}
         run: |
           mkdir -p dist
-          GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -v -ldflags "-X main.version=${{ steps.vars.outputs.VERSION }}" -o dist/analytics-server-${{ matrix.goos }}-${{ matrix.goarch }} ./main.go
+          GOOS=${{ matrix.goos }} GOARCH=${{ matrix.goarch }} go build -v -ldflags "-X main.version=${{ env.VERSION }}" -o dist/analytics-server-${{ matrix.goos }}-${{ matrix.goarch }} ./main.go
 
       - name: Upload build artifact for ${{ matrix.goarch }}
         uses: actions/upload-artifact@v4
