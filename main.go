@@ -250,6 +250,10 @@ func parseQueryParam(queryParams url.Values, key string) []string {
     return values
   }
 
+  if values, ok := queryParams[key+"[]"]; ok {
+    return values
+  }
+
   return []string{}
 }
 
