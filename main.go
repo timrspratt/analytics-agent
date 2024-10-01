@@ -282,7 +282,7 @@ func parseFilters(r *http.Request) Filters {
 }
 
 func matchesFilter(value string, filter []string) bool {
-  if len(filter) == 1 && filter[0] == "" {
+  if len(filter) == 0 {
     return true
   }
   for _, f := range filter {
