@@ -250,11 +250,15 @@ func parseQueryParam(queryParams url.Values, key string) []string {
     return values
   }
 
-  if values, ok := queryParams[key+"[]"]; ok {
-    return values
+  var values []string
+
+  for k, v := range queryParams {
+    if len(v) > 0 && v[0] != "" && strings.HasPrefix(k, key+"[") && strings.HasSuffix(k, "]") {
+      values = append(values, v[0])
+    }
   }
 
-  return []string{}
+  return values
 }
 
 func parseFilters(r *http.Request) Filters {
