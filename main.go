@@ -68,16 +68,14 @@ func main() {
 }
 
 func aggregateHandler(w http.ResponseWriter, r *http.Request) {
-  logFilePaths := r.URL.Query().Get("file")
-  if logFilePaths == "" {
+  files, ok := req.URL.Query()["file"]
+
+  if !ok || len(files) == 0 {
     http.Error(w, "Missing 'file' query parameter", http.StatusBadRequest)
     return
   }
 
-  files := strings.Split(logFilePaths, ",")
-
-  includeParam := r.URL.Query().Get("include")
-  include := strings.Split(includeParam, ",")
+  include := r.URL.Query()["include"]
 
   filters := parseFilters(r)
 
@@ -248,15 +246,11 @@ func processLogFile(
 }
 
 func parseQueryParam(queryParams url.Values, key string) []string {
-	if values, ok := queryParams[key+"[]"]; ok {
-		return values
-	}
+  if values, ok := queryParams[key]; ok {
+    return values
+  }
 
-	if value, ok := queryParams[key]; ok && value[0] != "" {
-		return []string{value[0]}
-	}
-
-	return []string{}
+  return []string{}
 }
 
 func parseFilters(r *http.Request) Filters {
@@ -264,12 +258,12 @@ func parseFilters(r *http.Request) Filters {
     Limit:      10,
     Minutes:    10,
     StatusCode: parseQueryParam(r.URL.Query(), "status-code"),
-		Country:    parseQueryParam(r.URL.Query(), "country"),
-		Continent:  parseQueryParam(r.URL.Query(), "continent"),
-		Path:       parseQueryParam(r.URL.Query(), "path"),
-		UserAgent:  parseQueryParam(r.URL.Query(), "user-agent"),
-		ASN:        parseQueryParam(r.URL.Query(), "asn"),
-		IP:         parseQueryParam(r.URL.Query(), "ip"),
+    Country:    parseQueryParam(r.URL.Query(), "country"),
+    Continent:  parseQueryParam(r.URL.Query(), "continent"),
+    Path:       parseQueryParam(r.URL.Query(), "path"),
+    UserAgent:  parseQueryParam(r.URL.Query(), "user-agent"),
+    ASN:        parseQueryParam(r.URL.Query(), "asn"),
+    IP:         parseQueryParam(r.URL.Query(), "ip"),
   }
 
   if minutesStr := r.URL.Query().Get("minutes"); minutesStr != "" {
