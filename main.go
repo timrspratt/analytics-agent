@@ -68,14 +68,27 @@ func main() {
 }
 
 func aggregateHandler(w http.ResponseWriter, r *http.Request) {
-  files, ok := req.URL.Query()["file"]
+  files, ok := r.URL.Query()["file"]
 
   if !ok || len(files) == 0 {
     http.Error(w, "Missing 'file' query parameter", http.StatusBadRequest)
     return
   }
 
-  include := r.URL.Query()["include"]
+  include, ok := r.URL.Query()["include"]
+
+  if !ok || len(include) == 0 {
+    include = []string{
+      "requests_per_minute",
+      "requests_per_country",
+      "requests_per_continent",
+      "requests_per_user_agent",
+      "requests_per_status_code",
+      "requests_per_path",
+      "requests_per_asn_org",
+      "requests_per_ip",
+    }
+  }
 
   filters := parseFilters(r)
 
@@ -118,19 +131,6 @@ func aggregateHandler(w http.ResponseWriter, r *http.Request) {
     PeriodStart:   periodStart,
     PeriodEnd:     periodEnd,
     TotalRequests: totalRequests,
-  }
-
-  if includeParam == "" || include[0] == "" {
-    include = []string{
-      "requests_per_minute",
-      "requests_per_country",
-      "requests_per_continent",
-      "requests_per_user_agent",
-      "requests_per_status_code",
-      "requests_per_path",
-      "requests_per_asn_org",
-      "requests_per_ip",
-    }
   }
 
   if contains(include, "requests_per_minute") || len(include) == 0 {
