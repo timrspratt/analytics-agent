@@ -238,17 +238,29 @@ func processLogFile(
   return nil
 }
 
+func parseQueryParam(queryParams url.Values, key string) []string {
+	if values, ok := queryParams[key+"[]"]; ok {
+		return values
+	}
+
+	if value, ok := queryParams[key]; ok && value[0] != "" {
+		return []string{value[0]}
+	}
+
+	return []string{}
+}
+
 func parseFilters(r *http.Request) Filters {
   filters := Filters{
     Limit:      10,
     Minutes:    10,
-    StatusCode: strings.Split(r.URL.Query().Get("status-code"), ","),
-    Country:    strings.Split(r.URL.Query().Get("country"), ","),
-    Continent:  strings.Split(r.URL.Query().Get("continent"), ","),
-    Path:       strings.Split(r.URL.Query().Get("path"), ","),
-    UserAgent:  strings.Split(r.URL.Query().Get("user-agent"), ","),
-    ASN:        strings.Split(r.URL.Query().Get("asn"), ","),
-    IP:         strings.Split(r.URL.Query().Get("ip"), ","),
+    StatusCode: parseQueryParam(r.URL.Query(), "status-code"),
+		Country:    parseQueryParam(r.URL.Query(), "country"),
+		Continent:  parseQueryParam(r.URL.Query(), "continent"),
+		Path:       parseQueryParam(r.URL.Query(), "path"),
+		UserAgent:  parseQueryParam(r.URL.Query(), "user-agent"),
+		ASN:        parseQueryParam(r.URL.Query(), "asn"),
+		IP:         parseQueryParam(r.URL.Query(), "ip"),
   }
 
   if minutesStr := r.URL.Query().Get("minutes"); minutesStr != "" {
