@@ -68,14 +68,14 @@ func main() {
 }
 
 func aggregateHandler(w http.ResponseWriter, r *http.Request) {
-  files, ok := r.URL.Query()["file"]
+  files := parseQueryParam(r.URL.Query(), "file")
 
-  if !ok || len(files) == 0 {
+  if len(files) == 0 {
     http.Error(w, "Missing 'file' query parameter", http.StatusBadRequest)
     return
   }
 
-  include, ok := r.URL.Query()["include"]
+  include, ok := parseQueryParam(r.URL.Query(), "include")
 
   if !ok || len(include) == 0 {
     include = []string{
